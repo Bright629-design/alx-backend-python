@@ -1,9 +1,10 @@
+#!/usr/bin/env python3
 import unittest
 from parameterized import parameterized
 from utils import access_nested_map
 
-class TestAccessNestedMap(unittest.TestCase):
 
+class TestAccessNestedMap(unittest.TestCase):
     @parameterized.expand([
         ({"a": 1}, ("a",), 1),
         ({"a": {"b": 2}}, ("a",), {"b": 2}),
@@ -11,3 +12,8 @@ class TestAccessNestedMap(unittest.TestCase):
     ])
     def test_access_nested_map(self, nested_map, path, expected):
         self.assertEqual(access_nested_map(nested_map, path), expected)
+
+git add test_utils.py
+git commit -m "Fix: add shebang and finalize test_access_nested_map"
+git push
+
