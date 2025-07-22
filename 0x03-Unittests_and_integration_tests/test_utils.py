@@ -25,8 +25,10 @@ class TestAccessNestedMap(unittest.TestCase):
         self.assertEqual(str(context.exception), f"'{missing_key}'")
 
 
-import requests
+import unittest
 from unittest.mock import patch, Mock
+from parameterized import parameterized
+from utils import get_json  # ✅ import the function you're testing
 
 
 class TestGetJson(unittest.TestCase):
