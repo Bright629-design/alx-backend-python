@@ -57,9 +57,14 @@ class TestGithubOrgClient(unittest.TestCase):
             mock_get_json.assert_called_once()
             mock_url.assert_called_once()
 
+#!/usr/bin/env python3
+"""
+Unit test for GithubOrgClient.has_license
+"""
+
+import unittest
 from parameterized import parameterized
 from client import GithubOrgClient
-import unittest
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -71,5 +76,11 @@ class TestGithubOrgClient(unittest.TestCase):
     ])
     def test_has_license(self, repo, license_key, expected):
         """Test that has_license correctly evaluates license"""
-        self.assertEqual(GithubOrgClient.has_license(repo, license_key), expected)
+        result = GithubOrgClient.has_license(repo, license_key)
+        self.assertEqual(result, expected)
+
+
+if __name__ == '__main__':
+    unittest.main()
+
 
