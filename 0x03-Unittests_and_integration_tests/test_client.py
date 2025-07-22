@@ -83,4 +83,73 @@ class TestGithubOrgClient(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
 
+#!/usr/bin/env python3
+"""
+Integration tests for GithubOrgClient
+"""
+
+import unittest
+from unittest.mock import patch
+from parameterized import parameterized_class
+from client import GithubOrgClient
+from fixtures import TEST_PAYLOAD
+
+
+@parameterized_class([
+    {
+        'org_payload': TEST_PAYLOAD['org_payload'],
+        'repos_payload': TEST_PAYLOAD['repos_payload'],
+        'expected_repos': TEST_PAYLOAD['expected_repos'],
+        'apache2_repos': TEST_PAYLOAD['apache2_repos']
+    }
+])
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Integration tests with fixtures"""
+
+    @classmethod
+    def setUpClass(cls):
+        """Patch requests.get and return data from fixtures"""
+        cls.get_patcher = patch('requests.get')
+
+        # Start patcher
+        mock_get = cls.get_patcher.start()
+
+        # Define side effects based on URLs
+        def side_effect(url):
+            if url == "https://api.github.com/orgs/google":
+                return MockResponse(cls.org_payload)
+            elif url == cls.org_payload.get("repos_url"):
+                return MockResponse(cls.repos_payload)
+            return None
+
+        mock_get.side_effect = side_effect
+
+    @classmethod
+    def tearDownClass(cls):
+        """Stop patcher"""
+        cls.get_patcher.stop()
+
+    def test_public_repos(self):
+        """Test public_repos returns expected repos"""
+        client = GithubOrgClient("google")
+        self.assertEqual(client.public_repos(), self.expected_repos)
+
+    def test_public_repos_with_license(self):
+        """Test public_repos filters by license"""
+        client = GithubOrgClient("google")
+        self.assertEqual(
+            client.public_repos(license="apache-2.0"),
+            self.apache2_repos
+        )
+
+
+class MockResponse:
+    """Mock response to mimic requests.get().json()"""
+    def __init__(self, json_data):
+        self._json_data = json_data
+
+    def json(self):
+        return self._json_data
+
+
 
